@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+
+  app.openvip.localhost:
+    image: "elieserguterres/openvip-default"
+    container_name: openvip-app
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "app.openvip.localhost"
+      VIRTUAL_PORT: "80"
+    ports:
+      - "80"
+    volumes:
+      - ./www/backstage:/app:delegated
+    depends_on:
+      - nginx-proxy
+
+  portal.openvip.localhost:
+    image: "elieserguterres/openvip-default"
+    container_name: openvip-portal
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "portal.openvip.localhost"
+      VIRTUAL_PORT: "80"
+    ports:
+      - "80"
+    volumes:
+      - ./www/portal:/app:delegated
+    depends_on:
+      - nginx-proxy
+

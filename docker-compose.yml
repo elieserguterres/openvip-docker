@@ -1,0 +1,118 @@
+version: "3"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-proxy-le
+    volumes:
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - dhparam:/etc/nginx/dhparam:ro
+      - certs:/etc/nginx/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    restart: always
+
+  mysql:
+    image: "mysql:5.7"
+    container_name: "mysql"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=openVip@@123x
+    volumes:
+      - "./mysql/data:/var/lib/mysql:delegated"
+      - "./mysql/dump:/docker-entrypoint-initdb.d"
+      - "./mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"
+
+  backstage:
+    image: "elieserguterres/openvip-default"
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "app.openvip.com.br"
+      VIRTUAL_PORT: "80,443"
+      LETSENCRYPT_HOST: "app.openvip.com.br"
+      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+    ports:
+      - "80"
+    volumes:
+      - ./www/backstage:/app:delegated
+    depends_on:
+      - nginx-proxy
+
+  backstage-test:
+    image: "elieserguterres/openvip-default"
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "app.test.openvip.com.br"
+      VIRTUAL_PORT: "80,443"
+      LETSENCRYPT_HOST: "app.test.openvip.com.br"
+      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+    ports:
+      - "80"
+    volumes:
+      - ./www/backstage:/app:delegated
+    depends_on:
+      - nginx-proxy
+
+  portal:
+    image: "elieserguterres/openvip-default"
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "openvip.com.br"
+      VIRTUAL_PORT: "80,443"
+      LETSENCRYPT_HOST: "openvip.com.br"
+      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+    ports:
+      - "80"
+    volumes:
+      - ./www/portal:/app:delegated
+    depends_on:
+      - nginx-proxy
+
+  portal-test:
+    image: "elieserguterres/openvip-default"
+    restart: always
+    environment:
+      NGINX_WORKER_CONNECTIONS: "32"
+      VIRTUAL_HOST: "test.openvip.com.br"
+      VIRTUAL_PORT: "80,443"
+      LETSENCRYPT_HOST: "test.openvip.com.br"
+      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+    ports:
+      - "80"
+    volumes:
+      - ./www/portal:/app:delegated
+    depends_on:
+      - nginx-proxy
+
+volumes:
+  conf:
+  vhost:
+  html:
+  dhparam:
+  certs:
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
