@@ -4,3 +4,4 @@ www/portal/
 www/validacao/
 mysql/data/
 template/
+.DS_Store
