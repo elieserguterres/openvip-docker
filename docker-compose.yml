@@ -56,22 +56,24 @@ services:
       - ./www/backstage:/app:delegated
     depends_on:
       - nginx-proxy
+      - mysql
+      - letsencrypt
 
-  backstage-test:
-    image: "elieserguterres/openvip-default"
-    restart: always
-    environment:
-      NGINX_WORKER_CONNECTIONS: "32"
-      VIRTUAL_HOST: "app.test.openvip.com.br"
-      VIRTUAL_PORT: "80,443"
-      LETSENCRYPT_HOST: "app.test.openvip.com.br"
-      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
-    ports:
-      - "80"
-    volumes:
-      - ./www/backstage:/app:delegated
-    depends_on:
-      - nginx-proxy
+  # backstage-test:
+  #   image: "elieserguterres/openvip-default"
+  #   restart: always
+  #   environment:
+  #     NGINX_WORKER_CONNECTIONS: "32"
+  #     VIRTUAL_HOST: "app.test.openvip.com.br"
+  #     VIRTUAL_PORT: "80,443"
+  #     LETSENCRYPT_HOST: "app.test.openvip.com.br"
+  #     LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+  #   ports:
+  #     - "80"
+  #   volumes:
+  #     - ./www/backstage:/app:delegated
+  #   depends_on:
+  #     - nginx-proxy
 
   portal:
     image: "elieserguterres/openvip-default"
@@ -88,22 +90,24 @@ services:
       - ./www/portal:/app:delegated
     depends_on:
       - nginx-proxy
+      - mysql
+      - letsencrypt
 
-  portal-test:
-    image: "elieserguterres/openvip-default"
-    restart: always
-    environment:
-      NGINX_WORKER_CONNECTIONS: "32"
-      VIRTUAL_HOST: "test.openvip.com.br"
-      VIRTUAL_PORT: "80,443"
-      LETSENCRYPT_HOST: "test.openvip.com.br"
-      LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
-    ports:
-      - "80"
-    volumes:
-      - ./www/portal:/app:delegated
-    depends_on:
-      - nginx-proxy
+  # portal-test:
+  #   image: "elieserguterres/openvip-default"
+  #   restart: always
+  #   environment:
+  #     NGINX_WORKER_CONNECTIONS: "32"
+  #     VIRTUAL_HOST: "test.openvip.com.br"
+  #     VIRTUAL_PORT: "80,443"
+  #     LETSENCRYPT_HOST: "test.openvip.com.br"
+  #     LETSENCRYPT_EMAIL: "elieserguterres@gmail.com"
+  #   ports:
+  #     - "80"
+  #   volumes:
+  #     - ./www/portal:/app:delegated
+  #   depends_on:
+  #     - nginx-proxy
 
 volumes:
   conf:
@@ -114,5 +118,4 @@ volumes:
 
 networks:
   default:
-    external:
-      name: nginx-proxy
+    name: nginx-proxy

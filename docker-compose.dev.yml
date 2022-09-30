@@ -10,6 +10,18 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     restart: always
 
+  mysql:
+    image: "mysql:5.7"
+    container_name: "mysql"
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=openVip@@123x
+    volumes:
+      - "./mysql/data:/var/lib/mysql:delegated"
+      - "./mysql/dump:/docker-entrypoint-initdb.d"
+      - "./mysql/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"
+
   app.openvip.localhost:
     image: "elieserguterres/openvip-default"
     container_name: openvip-app
@@ -24,6 +36,7 @@ services:
       - ./www/backstage:/app:delegated
     depends_on:
       - nginx-proxy
+      - mysql
 
   portal.openvip.localhost:
     image: "elieserguterres/openvip-default"
@@ -39,4 +52,8 @@ services:
       - ./www/portal:/app:delegated
     depends_on:
       - nginx-proxy
+      - mysql
 
+networks:
+  default:
+    name: nginx-proxy
