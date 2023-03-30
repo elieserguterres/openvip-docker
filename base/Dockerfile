@@ -1,4 +1,4 @@
-FROM debian:10.2-slim
+FROM debian:latest
 
 LABEL maintainer="elieserguterres@gmail.com"
 

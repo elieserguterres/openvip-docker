@@ -1,4 +1,4 @@
-FROM elieserguterres/base
+FROM elieserguterres/docker-base
 
 RUN apt-key.sh ABF5BD827BD9BF62 && \
     apt-source.sh nginx "deb https://nginx.org/packages/mainline/debian buster nginx" && \

@@ -1,4 +1,4 @@
-FROM berni/base-http
+FROM elieserguterres/docker-base-http
 
 RUN apt-install.sh \
         git-core \
@@ -11,10 +11,11 @@ RUN apt-install.sh \
 ARG PHP_VERSION
 
 RUN apt-install.sh \
+        "libffi6" \
         "php7.4-fpm" \
         "php7.4-curl"
 
-RUN php -r "copy('https://getcomposer.org/installer', 'php://stdout');" | php -- --install-dir /usr/bin --filename composer --version=1.10.16 && \
+RUN php -r "copy('https://getcomposer.org/installer', 'php://stdout');" | php -- --install-dir /usr/bin --filename composer && \
     mkdir -p "/var/lib/composer"
 
 ENV COMPOSER_ALLOW_SUPERUSER "1"
